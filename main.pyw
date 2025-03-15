@@ -30,8 +30,10 @@ class Overlay(QtWidgets.QWidget):
         super().__init__()
 
         # Load the PNG image
-        if not os.path.exists(config["file"]["display"]):
-            exit(1)
+        self.image_path = config["file"]["display"]
+        if not os.path.exists(self.image_path):
+            print(f"Not Available: {self.image_path}")
+            sys.exit(1)
         self.image = QtGui.QPixmap(config["file"]["display"])
 
         # Set window title and icon for taskbar
