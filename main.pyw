@@ -85,6 +85,10 @@ class Overlay(QtWidgets.QWidget):
         x = (screen_width - img_width) // 2
         y = (screen_height - img_height) // 2
 
+        print(f"IMG    : {self.image_path} : {img_width} x {img_height}")
+        print(f"DISPLAY: {screen_width} x {screen_height}")
+        print(f"PAINT  : {x} ,{y} ,{display_width} x {display_height}")
+
         # Draw the PNG image at the center
         painter.drawPixmap(x, y, display_width, display_height, self.image)
 
@@ -125,4 +129,3 @@ if __name__ == "__main__":
 
     # Main loop
     sys.exit(app.exec_())
-
