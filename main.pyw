@@ -78,12 +78,15 @@ class Overlay(QtWidgets.QWidget):
 
         img_width, img_height = self.image.width(), self.image.height()
 
+        display_width = img_width
+        display_height = img_height
+
         # Center the image
         x = (screen_width - img_width) // 2
         y = (screen_height - img_height) // 2
 
         # Draw the PNG image at the center
-        painter.drawPixmap(x, y, self.image)
+        painter.drawPixmap(x, y, display_width, display_height, self.image)
 
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
