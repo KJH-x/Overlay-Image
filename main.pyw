@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from typing import Dict, Union
+from typing import Dict, List
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -131,11 +131,36 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         # get all png files in current directory
         png_files = [f for f in os.listdir("./") if f.lower().endswith(".png")]
 
+        # Group files with dimensions
+        grouped_files:Dict[str,List[str]] = {}
         for png_file in png_files:
-            # extract file name without extension
-            file_name = os.path.splitext(png_file)[0]
-            action = self.switch_menu.addAction(file_name)
-            action.triggered.connect(lambda checked, file=png_file: self.switch_image(file))
+            base_name = os.path.splitext(png_file)[0]
+            if "@" in base_name:
+                prefix = base_name.split("@")[0]
+            else:
+                prefix = base_name
+
+            if prefix not in grouped_files:
+                grouped_files[prefix] = []
+            grouped_files[prefix].append(png_file)
+
+        # Create menu items
+        for prefix, files in grouped_files.items():
+            if len(files) > 1:
+                # Create submenu for grouped files
+                if submenu := self.switch_menu.addMenu(prefix):
+                    for file in files:
+                        # Remove @x and .png from display name
+                        # display_name = os.path.splitext(file)[0].split("@")[0].removesuffix(".png")
+                        file_name = os.path.splitext(file)[0]
+                        display_name = "(@1x)" if '@' not in file_name else file_name.split("@")[1]
+                        if action := submenu.addAction(display_name):
+                            action.triggered.connect(lambda checked, file=file: self.switch_image(file))
+            else:
+                # Single file, add directly to main menu
+                display_name = os.path.splitext(files[0])[0].removesuffix(".png")
+                if action := self.switch_menu.addAction(display_name):
+                    action.triggered.connect(lambda checked, file=files[0]: self.switch_image(file))
 
     def switch_image(self, image_file):
         if self.overlay:

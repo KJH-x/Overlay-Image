@@ -10,6 +10,8 @@ This script creates a transparent, click-through overlay that displays an image 
 - Click-through functionality (input transparency)
 - System tray icon for easy management
 - Image switching functionality through system tray menu
+  - Groups images with same prefix and different resolutions (e.g., <image@1x.png>, <image@2x.png>)
+  - Single images appear directly in the main menu
 - Configurable through `config.json`
 
 ## Prerequisites
@@ -47,6 +49,8 @@ Create a `config.json` file in the same directory as the script. The file should
 
 4. Use the system tray icon to:
     - Switch between different PNG images in the directory
+      - Images with same prefix are grouped (e.g., <logo@1x.png>, <logo@2x.png>)
+      - Single images appear directly in the main menu
     - Exit the application (via menu or double-click)
 
 ## License
