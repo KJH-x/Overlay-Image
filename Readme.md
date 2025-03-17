@@ -2,14 +2,15 @@
 
 ## Description
 
-This script creates a transparent, click-through overlay that displays an image centered on the screen. It utilizes PyQt5 to render the image and provides a system tray icon for easy exit functionality.
+This script creates a transparent, click-through overlay that displays an image centered on the screen. It utilizes PyQt5 to render the image and provides a system tray icon for easy management and control.
 
 ## Features
 
-- Displays an image as an always-on-top overlay.
-- Click-through functionality (input transparency).
-- System tray icon for easy exit.
-- Configurable through `config.json`.
+- Displays an image as an always-on-top overlay
+- Click-through functionality (input transparency)
+- System tray icon for easy management
+- Image switching functionality through system tray menu
+- Configurable through `config.json`
 
 ## Prerequisites
 
@@ -31,23 +32,26 @@ Create a `config.json` file in the same directory as the script. The file should
 }
 ```
 
-- `display`: Path to the image file to be shown as an overlay.
+- `display`: Path to the image file to be shown as an overlay (on startup).
 - `icon`: Path to the system tray icon image.
 
 ## Usage
 
-1. Ensure `config.json` is properly set up with valid image paths.
-2. Run the script:
+1. Ensure config.json is properly set up with valid image paths
+2. Place your PNG images in the same directory as the script
+3. Run the script:
 
    ```sh
    python main.pyw
-   ```
+    ```
 
-3. To exit, use the system tray menu or double-click the icon.
+4. Use the system tray icon to:
+    - Switch between different PNG images in the directory
+    - Exit the application (via menu or double-click)
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0. See the LICENSE file for details.
 
 ## Disclaimer
 

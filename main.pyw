@@ -34,7 +34,7 @@ class Overlay(QtWidgets.QWidget):
         if not os.path.exists(self.image_path):
             print(f"Not Available: {self.image_path}")
             sys.exit(1)
-        self.image = QtGui.QPixmap(config["file"]["display"])
+        self.load_image(self.image_path)
 
         # Set window title and icon for taskbar
         self.setWindowTitle(config["file"]["display"])
@@ -92,15 +92,31 @@ class Overlay(QtWidgets.QWidget):
         # Draw the PNG image at the center
         painter.drawPixmap(x, y, display_width, display_height, self.image)
 
+    def load_image(self, image_path):
+        """Load image and update image path"""
+        self.image_path = image_path
+        self.image = QtGui.QPixmap(image_path)
+        # Redraw window to display new image
+        self.update()
+
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
-    def __init__(self, config: Config, parent=None):
+    def __init__(self, config: Config, overlay=None, parent=None):
         # Create tray icon
         super().__init__(QtGui.QIcon(config["file"]["icon"]), parent)
         self.setToolTip("Overlay Image")
+        self.config = config
+        self.overlay = overlay
 
-        # Create menu for tray (Exit)
+        # Create menu for tray
         menu = QtWidgets.QMenu()
+
+        # Add switch image submenu
+        self.switch_menu = QtWidgets.QMenu("Switch Image")
+        menu.addMenu(self.switch_menu)
+        self.update_image_menu()
+
+        # Add exit option
         if (exit_action := menu.addAction("Exit")):
             exit_action.triggered.connect(QtWidgets.QApplication.quit)
             self.setContextMenu(menu)
@@ -109,6 +125,25 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.activated.connect(self.on_tray_icon_activated)
 
         self.show()
+
+    def update_image_menu(self):
+        self.switch_menu.clear()
+        # get all png files in current directory
+        png_files = [f for f in os.listdir("./") if f.lower().endswith(".png")]
+
+        for png_file in png_files:
+            # extract file name without extension
+            file_name = os.path.splitext(png_file)[0]
+            action = self.switch_menu.addAction(file_name)
+            action.triggered.connect(lambda checked, file=png_file: self.switch_image(file))
+
+    def switch_image(self, image_file):
+        if self.overlay:
+            image_path = os.path.join(os.getcwd(), image_file)
+            self.config["file"]["display"] = image_path
+            # Load new image and redraw
+            self.overlay.load_image(image_path)
+            print(f"Image switched to: {image_path}")
 
     def on_tray_icon_activated(self, reason):
         # Double click tray icon also leads to exit.
@@ -125,7 +160,7 @@ if __name__ == "__main__":
     config = load_config(config_path)
 
     overlay = Overlay(config)
-    tray_icon = SystemTrayIcon(config)
+    tray_icon = SystemTrayIcon(config, overlay)
 
     # Main loop
     sys.exit(app.exec_())
