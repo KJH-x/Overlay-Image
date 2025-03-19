@@ -101,12 +101,12 @@ class Overlay(QtWidgets.QWidget):
 
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
-    def __init__(self, config: Config, overlay=None, parent=None):
+    def __init__(self, config: Config, overlay: Overlay, parent=None):
         # Create tray icon
         super().__init__(QtGui.QIcon(config["file"]["icon"]), parent)
         self.setToolTip("Overlay Image")
-        self.config = config
-        self.overlay = overlay
+        self.config: Config = config
+        self.overlay: Overlay = overlay
 
         # Create menu for tray
         menu = QtWidgets.QMenu()
@@ -132,7 +132,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         png_files = [f for f in os.listdir("./") if f.lower().endswith(".png")]
 
         # Group files with dimensions
-        grouped_files:Dict[str,List[str]] = {}
+        grouped_files: Dict[str, List[str]] = {}
         for png_file in png_files:
             base_name = os.path.splitext(png_file)[0]
             if "@" in base_name:
@@ -171,8 +171,10 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
             print(f"Image switched to: {image_path}")
 
     def on_tray_icon_activated(self, reason):
+        if reason == QtWidgets.QSystemTrayIcon.ActivationReason.Context:
+            self.update_image_menu()
         # Double click tray icon also leads to exit.
-        if reason == QtWidgets.QSystemTrayIcon.ActivationReason.DoubleClick:
+        elif reason == QtWidgets.QSystemTrayIcon.ActivationReason.DoubleClick:
             QtWidgets.QApplication.quit()
 
 
